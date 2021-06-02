@@ -29,3 +29,10 @@ git config --global user.email <E-mail>
 ```
 git config --global --list
 ```
+
+## pagerを無効にする
+コマンドラインで`git branch`や`git diff`実行時にpagerで表示されるのを防ぐ。
+※pagerから抜けるには`Ctrl + C`。
+```
+$ git config --global --replace-all core.pager "less -F -X"
+```
