@@ -10,7 +10,8 @@ Gitがtrackしているファイル。つまり、Gitが管理しているファ
 |:-----:|:---------------:|:----------:|:--------:|
 |untrack|new-file         |*           |*         |
 |track  |                 |            |readme.md |
-* Staging area, repositoryはGit管理されているステージなので、untrackファイルは存在しない。
+
+\* Staging area, repositoryはGit管理されているステージなので、untrackファイルは存在しない。
 
 Gitで管理されている`readme.md`を変更した場合、以下のようになる。
 
