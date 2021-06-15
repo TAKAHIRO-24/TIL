@@ -133,3 +133,15 @@ $ git pull upstream main
 2. fork元あるいは自分のリモートリポジトリからpullしてブランチを最新の状態にする。
 3. 自分のリモートリポジトリにpushする。
 4. fork元のリポジトリにPull Requestを出す。
+
+Pull Request画面からNew Pull Requestを押下。
+
+![image](https://user-images.githubusercontent.com/85177462/122077384-a82cdb80-ce36-11eb-96ca-56ee42cba077.png)
+
+fork元のリポジトリと自分のリモートリポジトリのfeatureブランチを選択し、変更点を記載。Create pull requestを押下。
+
+![image](https://user-images.githubusercontent.com/85177462/122077850-11145380-ce37-11eb-8957-0e5fe4759829.png)
+
+fork元のリポジトリにPull Requestが作成されたことを確認。
+
+![image](https://user-images.githubusercontent.com/85177462/122078054-402ac500-ce37-11eb-95f4-19bcd97524c7.png)
