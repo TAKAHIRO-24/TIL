@@ -90,3 +90,46 @@ Fast-forward
  README.md | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 ```
+
+## fork元のリポジトリにPushする
+
+```
+$ git remote add upstream <repo_url>
+```
+- フォーク元のリポジトリ名はなんでも問題ないが、`upstream`にするのが一般的。
+- fork元のリポジトリページにアクセスし、URLをコピーする。
+
+自分のリモートリポジトリはoriginとして登録していたが、fork元のリポジトリはupstreamとして登録する。
+
+現在登録されているリモートリポジトリを確認する。
+
+```
+$ git remote -v
+origin  git@github.com:TAKAHIRO-24/git-practice.git (fetch)
+origin  git@github.com:TAKAHIRO-24/git-practice.git (push)
+```
+
+`$ git remote add upstream <URL>`でfork元のリポジトリを登録した後、再度確認。
+fork元のリポジトリがupstreamで登録されていることが確認できる。
+
+```
+$ git remote -v
+origin  git@github.com:TAKAHIRO-24/git-practice.git (fetch)
+origin  git@github.com:TAKAHIRO-24/git-practice.git (push)
+upstream        git@github.com:D-S-Hub/git-practice.git (fetch)
+upstream        git@github.com:D-S-Hub/git-practice.git (push)
+```
+
+これまではリモートリポジトリからローカルに情報を反映させるときは、`git pull origin main`としていた。  
+fork元から情報を取得するには以下のコマンドを使用する。
+
+```
+$ git pull upstream main
+```
+
+### fork元にpushする際の手順
+
+1. ローカルリポジトリでブランチを切って変更する。
+2. fork元あるいは自分のリモートリポジトリからpullしてブランチを最新の状態にする。
+3. 自分のリモートリポジトリにpushする。
+4. fork元のリポジトリにPull Requestを出す。
