@@ -228,3 +228,38 @@ commit1 ← commit2 ← merge-commit1
 ```
 
 Automatic mergeと同様に、commit2とcommit3の両方の子commitが作成される。
+
+## p4mergeを使用してコンフリクトに対処してマージする
+
+コンフリクトが発生した際、対象ファイルをエディタで開いて不要な分を削除していたが、以下のコマンドを指定することで`~/.gitconfig`に指定したマージツールを使用してコンフリクトに対処することができる。
+
+```
+$ git mergetool
+```
+
+`git merge <branch-name>`実行時にコンフリクトが発生した際、上記コマンドでマージツールを起動すると、以下のような画面が展開される。
+
+![image](https://user-images.githubusercontent.com/85177462/122640867-a3b93900-d13c-11eb-9bc2-d68b80832baf.png)
+
+- 中央：現在のブランチの派生元ファイル。
+- 左側：マージ元ファイル。（featureブランチ）
+- 右側：マージ先ファイル。（mainブランチ）
+
+画面右下のボタンでどちらの変更を反映させるか選択することができる。  
+もちろん画面下部のファイルを直接編集してもよい。
+
+![image](https://user-images.githubusercontent.com/85177462/122641028-9e102300-d13d-11eb-8da9-5e95bc56e235.png)
+
+選択が終了したら、画面上部の保存ボタンを押下して閉じる。
+
+![image](https://user-images.githubusercontent.com/85177462/122641071-e16a9180-d13d-11eb-8c5d-221872b08078.png)
+
+その後は通常通り、`git add`コマンドと`git commit`コマンドを使用して変更を反映させる。
+
+また、p4mergeでコンフリクトを解消したら、拡張子が`.orig`のコンフリクト解消前のファイルが作成される。  
+これを開いてみると、以下の状態。
+
+![image](https://user-images.githubusercontent.com/85177462/122641154-6190f700-d13e-11eb-9406-0579e9bca398.png)
+
+不要であれば`rm README.md.orig`コマンドで削除する。  
+p4mergeのマージツールを使用すると、毎回この`.orig`ファイルが作成されるため、不要であれば、`.gitignore`ファイルに記述することでGit管理から外すことができる。
