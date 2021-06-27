@@ -6,6 +6,17 @@ Visual Studio Codeでの全体の設定ファイル。
 
 `"C:\Users\a_my_\AppData\Roaming\Code\User\settings.json"`
 
+## 設定手順
+
+- ファイル＞ユーザー設定＞設定＞から設定画面を開く。
+
+![image](https://user-images.githubusercontent.com/85177462/123543588-40f21e00-d78a-11eb-944a-7d554634e8a8.png)
+
+- 画面右上の「設定（json）を開く」からsettings.jsonを開く
+
+![image](https://user-images.githubusercontent.com/85177462/123543526-ed7fd000-d789-11eb-987d-106691b137a8.png)
+
+
 ## 設定内容
 
 ```
