@@ -42,3 +42,5 @@ fatal: refusing to merge unrelated histories
 ```
 $ git merge --allow-unrelated-histories origin/main
 ```
+
+最後に`git push origin main`でリモートリポジトリに変更を反映させる。
