@@ -57,6 +57,15 @@ b548fb2 update readme (mistake)
 
 - マージが完了してcloseされたPull Requestを開く。
 
+![image](https://user-images.githubusercontent.com/85177462/125196594-72dca780-e295-11eb-8f30-136d66676462.png)
+
+- 右下の[Revert]ボタンを押下すると、revert用のPull Requestを作成する画面が表示されるので、内容を記載して[Create pull request]ボタンを押下。
+
+![image](https://user-images.githubusercontent.com/85177462/125196676-afa89e80-e295-11eb-954e-b2576d1d3cce.png)
+
+- 作成されたPull Request画面で内容に問題なければマージを行う。
+
+![image](https://user-images.githubusercontent.com/85177462/125196730-d961c580-e295-11eb-8fed-3e367fa771fe.png)
 
 
 ## Reset
