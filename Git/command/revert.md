@@ -84,11 +84,11 @@ $ git reset <option> <commit-ID>
 
 ### オプション一覧
 
-|                 |Working directory|Staging area|
-| :-------------  | :-------------: | :--------: |
-|-- soft          |キープ            |キープ      |
-|-- mixed         |キープ            |リセット    |  
-|-- hard          |リセット          |リセット    |
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|-- soft            |キープ            |キープ      |
+|-- mixed(デフォルト)|キープ            |リセット    |  
+|-- hard            |リセット          |リセット    |
 
 - 「リセット」は指定したコミットと同じ状態に上書きされる。
 
@@ -107,3 +107,231 @@ commit1 ←--- commit2
                 ↑
                main
 ```
+
+### 1. git reset HEAD^
+
+変更前の状況。
+
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|                   |変更６            |変更５      |
+
+```
+ main
+   ↓
+INITIAL ←--- 変更１ ←--- 変更２ ←--- 変更３ ←--- 変更４
+                                                 ↑
+                                              feature
+                                                 ↑
+                                                HEAD
+```
+
+現在の状況は以下の通り。
+
+```
+$ git log --oneline
+496bd58 (HEAD -> feature) 4th update
+cbd9f78 3rd update
+d119528 2nd update
+0ff0997 1st update
+```
+
+```
+$ git status
+On branch feature
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   README.md
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+```
+
+コマンド実行。
+
+```
+$ git reset HEAD^
+```
+
+以下のようになる。  
+HEADが一つ前のコミットを指し、Working directoryの内容はそのままでStaging areaの内容はリポジトリで上書きされている。
+
+
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|                   |変更６            |変更３      |
+
+```
+ main
+   ↓
+INITIAL ←--- 変更１ ←--- 変更２ ←--- 変更３
+                                      ↑
+                                    feature
+                                      ↑
+                                     HEAD
+```
+
+```
+$ git log --oneline
+cbd9f78 (HEAD -> feature) 3rd update
+d119528 2nd update
+0ff0997 1st update
+```
+```
+$ git status
+On branch feature
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+### 2. git reset --soft HEAD^
+
+変更前の状況。
+
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|                   |変更６            |変更３      |
+
+```
+ main
+   ↓
+INITIAL ←--- 変更１ ←--- 変更２ ←--- 変更３
+                                      ↑
+                                    feature
+                                      ↑
+                                     HEAD
+```
+
+現在の状況は以下の通り。
+
+```
+$ git log --oneline
+cbd9f78 (HEAD -> feature) 3rd update
+d119528 2nd update
+0ff0997 1st update
+```
+
+コマンド実行。
+
+```
+$ git reset --soft HEAD^
+```
+
+以下のようになる。
+
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|                   |変更６            |変更３      |
+
+```
+ main
+   ↓
+INITIAL ←--- 変更１ ←--- 変更２
+                          ↑
+                        feature
+                          ↑
+                         HEAD
+```
+
+最新のコミットが削除され、ひとつ前のコミットをHEADが指していることがわかる。
+
+```
+$ git log --oneline
+d119528 (HEAD -> feature) 2nd update
+0ff0997 1st update
+```
+
+Working directoryとStaging areaの両方に変更がある。
+
+```
+$ git status
+On branch feature
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   README.md
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
+```
+
+`git diff`でWorking directoryとStaging areaの差分を確認する。
+
+![image](https://user-images.githubusercontent.com/85177462/125804266-fa489d8e-771d-4708-a77c-98cf34590cf4.png)
+
+上記より、最新のコミットがStaging areaに戻っていることがわかる。  
+**間違えてコミットしてしまった場合は`git reset --soft HEAD^`をすれば一つ前のコミットに戻り、Staging areaの内容もコミット前に戻る。**
+
+### 3. git reset --hard HEAD^
+
+現在の状況。
+
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|                   |変更６            |変更３      |
+
+```
+ main
+   ↓
+INITIAL ←--- 変更１ ←--- 変更２
+                          ↑
+                        feature
+                          ↑
+                         HEAD
+```
+
+```
+$ git log --oneline
+d119528 (HEAD -> feature) 2nd update
+0ff0997 1st update
+```
+
+コマンド実行。
+
+```
+$ git reset --hard HEAD^
+HEAD is now at 0ff0997 1st update
+```
+
+最新のコミットが一つ前に戻ったことがわかる。
+
+|                   |Working directory|Staging area|
+| :-------------    | :-------------: | :--------: |
+|                   |変更１            |変更１      |
+
+```
+ main
+   ↓
+INITIAL ←--- 変更１
+               ↑
+            feature
+               ↑
+              HEAD
+```
+
+```
+$ git log --oneline
+0ff0997 (HEAD -> feature) 1st update
+```
+
+```
+$ git status
+On branch feature
+nothing to commit, working tree clean
+```
+
+Working directoryとStaging areaの内容が指定したコミットに上書きされたことがわかる。
+
+## Revert・Reset・Checkout
+
+||コミット単位|ファイル単位|
+|:---------:|:---------:|:---------:|
+|Revert|打ち消しコミットで状態を戻す|-|
+|Reset|指定したコミットに戻して、それ以降のコミットを破棄|unstageする|
+|Checkout|ブランチの切替|Working directoryの変更を破棄|
