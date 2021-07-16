@@ -64,3 +64,12 @@ $ git config --global mergetool.prompt false
 [mergetool]
 	prompt = false
 ```
+
+### CLIで編集する方法
+
+上記でPathが正しく設定されなかったのは、空白が含まれていたため。  
+Pathを`""`で囲うことで正しく設定できる。
+
+```
+$ git config --global difftool.WinMerge.path "C:\Program Files\WinMerge\WinMergeU.exe"
+```
