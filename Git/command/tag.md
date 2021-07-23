@@ -128,3 +128,6 @@ $ git fetch --tags --all
 - `-a`(`--annotate`) : 注釈付きタグ作成
 - `-f`(`--force`) : タグ名がすでに存在していたら置き換える
 - `-m`(`--message`) : タグ付け時のメッセージ
+
+# 参照
+- [Gitのタグのメッセージを上書きする](https://qiita.com/tksugimoto/items/4d0a9e1308363c7e0911)
