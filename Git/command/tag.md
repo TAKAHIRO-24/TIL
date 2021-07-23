@@ -41,6 +41,21 @@ $ git show <tagname>
 $ git tag --delete <tagname>
 ```
 
+### タグの編集
+
+- 上書き
+
+```
+$ git tag -a <tagname> -f -m <new-message>
+```
+
+- 前回メッセージを編集
+
+```
+$ git tag -a <tagname> -f
+```
+
+
 ## ２．annotated tag
 
 タグには以下のようにリリースノートのような情報を付け加えることもできる。
@@ -109,3 +124,7 @@ $ git fetch --tags --all
 - `git clone`でtagの情報も取得できるが、後から取得したい場合には上記コマンドを使用。
 - もし`git checkout tag/<tagname>`でcheckoutできなければ、一度tag情報をfetchするとよい。
 
+## オプション
+- `-a`(`--annotate`) : 注釈付きタグ作成
+- `-f`(`--force`) : タグ名がすでに存在していたら置き換える
+- `-m`(`--message`) : タグ付け時のメッセージ
