@@ -214,6 +214,18 @@ Exception in thread "main" java.lang.NumberFormatException: For input string: "x
 
 # 関数
 
+関数の基本的な記述方法は以下の通り。
+
+```kotlin
+//定義
+public fun calc(x: Int): Int {
+    return x + 10
+}
+
+//参照
+var value: Int = calc(20)
+```
+
 # 制御構文
 ## if文
 ## when文
