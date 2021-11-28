@@ -150,6 +150,22 @@ if !(obj is String) {
 }
 ```
 
+ただし、型のキャストができない場合例外が投げられる。
+
+```kotlin
+var name: String = "JetBrains"
+
+if (name is Int) {  
+
+} else {
+
+}
+
+//String型はInt型にキャストできないため以下のエラーが発生する
+Incompatible types: Int and String
+
+```
+
 ## 型のキャスト（アンセーフキャスト）
 型のキャストには`as`を用いる。
 
@@ -228,7 +244,90 @@ var value: Int = calc(20)
 
 # 制御構文
 ## if文
+
+if文の基本形は以下の通り。
+
+```kotlin
+var name: Any = "JetBrains"
+
+if (name is String) {
+    //条件式がTrueの場合に実行
+    println(name)
+} else {
+    //条件式がFalseの場合に実行
+    println("name is not String")
+}
+```
+
+KotlinにはJavaの三項演算子（条件演算子）は存在しない。  
+その代わり、if文が代入式として利用できる。  
+代入式としてif文を使用する際には最後に記述した変数や式が左辺の変数に代入される。
+
+```kotlin
+var value: Int = 10
+var value2: Int = if (value > 5) {
+    value += 10
+    value += 10
+    value  //この値が代入される
+} else {
+    value  //この値が代入される
+}
+
+println(value2) //30
+```
+
 ## when文
+
+Kotlinの`when`文ではアロー演算子（`->`)を使用する。  
+- 処理が一行の場合は、アロー演算子の後に半角スペースをはさんで記述。
+- 処理が複数行にわたる場合は、{}のブロック内に記述。
+- `,`で複数条件を指定しすることができる。
+  - `&&`や`||`を使用して条件式を記述することも可能。
+- `is`演算子や`in`演算子を使用することができる。
+- `!`演算子を使用することで、`!in`, `!is`を使用することができる。
+- `else`によって、上記全ての条件に該当しないものを処理することができる。
+
+```kotlin
+when(num) {
+    0 ->          //numが0の場合の処理
+    1 -> {
+                  //numが1の場合の処理
+                  //処理が複数行の場合は{}ブロック内に記述
+    }
+    2,3 ->        //numが2,3の場合の処理
+    in 4..10 ->   //numが4～10の範囲内の場合の処理
+    !in 11..15 -> //numが11～15の範囲外の場合の処理
+    is Int ->     //numがInt型の場合の処理
+    !is Int ->    //numがInt型ではない場合の処理
+    in 16..20, in 30..35 -> //numが16～20または30～35の範囲の場合の処理
+    (num == 36) || (num == 38) -> //numが36または38の場合の処理
+    else ->       //上記全ての条件に該当しなかった場合
+}
+```
+
+`when`文も`if`文と同様に代入式として使用することができる。
+
+```kotlin
+var num: Int = 10
+var num2: String = when(num) {
+    1 -> "one"
+    2 -> "two"
+    else -> "other"
+}
+```
+
+また、`when`文に引数を与えなかった場合、`if-else`文の代替として認識され、分岐条件は論理型の判定になるように記述する必要がある。
+
+```kotlin
+var num: Int = 10
+var num2: Int = when {
+    //条件はTrueかFalseになるように記述する必要がある
+    num == 1 -> 10
+    num == 10 -> 10 * 10
+    else -> 0
+}
+```
+
 ## for文
 ## while文
 
