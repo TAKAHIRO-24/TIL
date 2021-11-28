@@ -482,6 +482,137 @@ array.forEach {
 
 # クラス
 
+Kotlinのコンストラクタには以下の2種類がある。
+- プライマリコンストラクタ（primary constructor）
+- セカンダリコンストラクタ（secondary constructor）
+
+## プライマリコンストラクタ（primary constructor）
+
+以下のように、丸括弧に囲まれたコードブロックをプライマリコンストラクタという。  
+※`constructor`は省略するのが一般的。
+
+```kotlin
+class Person constructor(val fullname: String, val age: Int )
+```
+
+プライマリコンストラクタでは以下の定義する。
+- コンストラクタの引数。
+- 引数で初期化されるプロパティ。
+
+インスタンスを生成する場合は以下のように記述する。
+
+```kotlin
+val person = Person("JetBrain", 21)
+```
+
+### ■パターン１
+
+プライマリコンストラクタを明示的に記述する場合は以下のようになる。
+
+```kotlin
+class Person constructor (_fullname: String, _age: Int) {
+
+    val fullname: String
+    val age: Int
+    
+    init {
+        //thisは省略可能
+        this.fullname = _fullname
+        this.age = _age
+    }
+
+    fun feature() {
+        println("${this.fullname} : ${this.age}")
+    }
+}
+
+val person: Person  = Person("JetBrains", 21)
+person.feature() //JetBrains : 21
+```
+
+`init`は初期化ブロックの実装個所。  
+初期化ブロックでは、生成された時に実行される初期化コードを含んでおり、プライマリコンストラクタと一緒に利用されることを意図されている。
+
+### ■パターン２
+
+コンストラクタ引数に`var`や`val`を指定することでプロパティの宣言と初期化を同時に行うことができる。
+
+```kotlin
+class Person (private val fullname: String, private val age: Int) {
+
+    fun feature() {
+        println("${this.fullname} : ${this.age}")
+    }
+}
+
+val person: Person  = Person("JetBrains", 21)
+person.feature() //JetBrains : 21
+```
+
+### ■パターン３
+
+コンストラクタ引数にデフォルト値を設定することも可能。
+
+```kotlin
+class Person (private val fullname: String = "no-name"
+             ,private val age: Int = 0) {
+
+    fun feature() {
+        println("${this.fullname} : ${this.age}")
+    }
+}
+
+val person: Person  = Person()
+person.feature() //no-name : 0
+```
+
+## セカンダリコンストラクタ（secondary constructor）
+
+***TODO : セカンダリコンストラクタの使用例を調べる。***
+
+- クラスに0個以上持つことができる。
+- 最終的にプライマリコンストラクタを呼び出すことが必要。
+- `this`を使用してプライマリコンストラクタを呼び出すことが可能。
+
+基本構文は以下の通り。
+
+```kotlin
+constructor (引数: データ型): this(引数)
+```
+
+### ■パターン１
+
+セカンダリコンストラクタが１つの場合。
+
+セカンダリコンストラクタにnameが渡され、その後プライマリコンストラクタが実行される。
+
+```kotlin
+class Person (private val name: String, private val age: Int) {
+
+    //thisはプライマリコンストラクタを指す
+    constructor (name: String) : this(name, 21)
+
+    fun feature() {
+        println("${name} : ${age}")
+    }
+}
+
+val person: Person = Person("JetBrain")
+person.feature() //JetBrain : 21
+```
+
+### ■パターン２
+
+セカンダリコンストラクタが２つの場合。
+
+***TODO : 後ほど記述する。***
+
+## 継承
+
+## インターフェース
+
+## 静的メンバへのアクセス
+
 # object
 
 # ラムダ式
@@ -521,3 +652,8 @@ array.forEach {
 - [【Kotlin練習問題】forループのためのイテレーターの実装](https://codelabsjp.net/kotlin-practice-iterator/)
 ### 高階関数を用いたループ
 - [Kotlinでループ処理](https://qiita.com/NagaokaKenichi/items/b68b699dc0b792754d7b)
+
+## クラス
+### 
+- [【Kotlin】コンストラクタ（プライマリ / セカンダリ）](https://zenn.dev/tm35/articles/38780504cacdd5)
+- [Kotlin - コンストラクタ](https://blog.y-yuki.net/entry/2019/05/25/093000)
