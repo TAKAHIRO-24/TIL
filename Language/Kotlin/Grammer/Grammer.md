@@ -41,17 +41,6 @@ val name: String = "Brains"
 
 ## 推論型変数
 
-Kotlinでは原則的に宣言時に初期化が必要だが、`var`の前に`lateinit`を記述することで宣言のみを行うことができる。
-また、変数の宣言のみを行う場合、型を明示的に示す必要がある。
-
-```Kotlin
-//宣言のみ
-lateinit var name: string
-
-//初期化
-name = "JetBrains"
-```
-
 宣言と同時に代入を行う場合、代入した値のデータ型として型推論される。
 
 ```Kotlin
@@ -100,6 +89,33 @@ const val name: String = "JetBrains"
   - getterメソッドを使用せずに直接呼び出す。
   - (例) example.name
 
+## lateinit変数
+
+Kotlinでは原則的に宣言時に初期化が必要だが、`var`の前に`lateinit`を記述することで宣言のみを行うことができる。
+また、変数の宣言のみを行う場合、型を明示的に示す必要がある。
+
+```Kotlin
+//宣言のみ
+lateinit var name: string
+
+//初期化
+name = "JetBrains"
+```
+
+>クラスのプロパティはできるだけ再代入不可変数の`val`変数として定義すると保守性の高いコードを作成することができる。ただし、`val`変数は生成時に参照先のオブジェクトを確定しておく必要があるため、変数の宣言時に代入するか、`init`ブロックでの代入が必要。  
+しかし、Androidなどのフレームワーク上で実装を行っている場合、どうしてもフレームワークによる初期化関数の呼び出しの段階まで変数の初期化ができないことがある。このようなケースで`val`変数の代わりに使用できるのが`lateinit`変数。
+
+```kotlin
+class MainActivity : Activity() {
+    private lateinit var surfaceView: SurfaceView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        surfaceView = SurfaceView(this)
+    }
+    //...
+}
+```
 
 # 型
 
@@ -329,7 +345,140 @@ var num2: Int = when {
 ```
 
 ## for文
+
+Kotlinの`for`文では、`for (変数 in イテレータ)`の形式で記述する。  
+イテレータにはIteratorインターフェースを実装したオブジェクトを指定する。
+
+```kotlin
+//処理が1行の場合は以下のように記述可能。
+for (i in 1..3) println(i)
+
+//処理が複数行の場合は{}内に記述可能。
+var num: Int = 0
+
+for (i in 1..3) {
+    num = i + 10
+    println(num) //11, 12, 13
+}
+
+//downToを使用した例
+for (i in 20 downTo 0) {
+    println(i) //20, 19, 18 ... 2, 1, 0
+}
+
+//stepを使用した例
+for (i in 20 downTo 0 step 2) {
+    println(i) //20, 18, 16 ... 4, 2, 0
+}
+
+//配列を使用した例
+val array: Array<String> = arrayOf("banana", "apple", "orange")
+
+for (fruit in array) {
+    println(fruit) //banana, apple, orange
+}
+
+//mapを使用した例
+val map: Map<Int,String> = mapOf(1 to "banana"
+                                ,2 to "apple"
+                                ,3 to "orange")
+
+for ((num,fruit) in map) {
+    println("${num} : ${fruit}") //1 : banana
+                                 //2 : apple
+                                 //3 : orange
+}
+
+//インデックス付きのfor文
+//indicesを使用した例
+val name: String = "JetBrains"
+
+for (i in name.indices) {
+    println(name[i])  //J, e, t, B, r, a, i, n, s
+}
+
+//インデックス付きのfor文
+//withIndex()を使用した例
+val name: String = "JetBrains"
+
+for ((index, value) in name.withIndex()) {
+    println("index : ${index}, value : ${value}")
+    /*
+    index : 0, value : J
+    index : 1, value : e
+    index : 2, value : t
+    index : 3, value : B
+    index : 4, value : r
+    index : 5, value : a
+    index : 6, value : i
+    index : 7, value : n
+    index : 8, value : s
+    */
+}
+```
+
+イテレータとは`for`文が動作するために必要な概念で、イテレータが実装されていないオブジェクトでは`for`文を使うことができない。  
+
+具体的にはイテレータとは以下の実装がなされている必要がある。  
+これらによって、`for`文がいつまで繰り返されるべきなのかを知ることができる。
+- next()
+  - 次の要素を返すメソッド
+- hasNext()
+  - 次の要素が存在するかを確かめるメソッド
+
+上の`1, 2, 3`が出力される`for`文では、`1..3`という`Int`型の値の範囲を指定する`IntRange`型にイテレータが実装されているため、1の次には2があり、2の次には3があり、3の次には値がないといった判断をコンピューターが可能となる。
+
+
 ## while文
+
+```kotlin
+var i: Int = 0
+
+while (i <= 10) {
+    println(i) //0, 1, 2, 3...8, 9, 10
+    i++
+}
+
+var i: Int = 10
+do {
+    println(i) //10, 9, 8...2, 1, 0
+    i--
+} while (i > 0)
+```
+
+## 高階関数を用いたループ
+
+- repeat
+  - repeat関数はループ回数を指定するだけでその回数ループする。***繰り返し回数***は`it`で参照可能。
+- forEach
+  - 配列やコレクションのループに使用可能。***繰り返しの要素***は`it`で参照可能。
+
+```kotlin
+//repeat関数
+repeat(5) {
+    println(it) //0, 1, 2, 3, 4
+}
+
+//ループ回数にarray.sizeを指定
+val array: Array<String> = arrayOf("banana", "apple", "orange")
+
+repeat(array.size) {
+    println("${it} : ${array[it]}")
+    /*
+    0 : banana
+    1 : apple
+    2 : orange
+    */
+}
+
+//forEach関数
+val array: Array<String> = arrayOf("banana", "apple", "orange")
+
+array.forEach {
+    println(it) //banana, apple, orange
+}
+```
+
 
 # クラス
 
@@ -345,11 +494,14 @@ var num2: Int = when {
 # 参照
 ## 全般
 - [Android programing getstart](https://kuririnz.github.io/AndroidCourse/android/12-KotlinBasic/#%E5%AD%A6%E7%BF%92%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88)
+
 ## 変数
 ### オプショナル（Null-Safety）
 - [Kotlinのif elseとletとalso](https://ticktakclock.hatenablog.com/entry/2020/02/22/203408)
 ### 定数
 - [【Android - kotlin】定数の宣言はconstを付ける](https://advancement-of-it-dwarfs.blogspot.com/2018/09/android-kotlin-how-to-define-constants.html)
+### lateinit変数
+- [lateinit による変数の初期化](https://maku77.github.io/kotlin/basic/lateinit.html)
 
 ## 型
 - [Kotlinの型を知る ~前編~](https://qiita.com/AAkira/items/16ae2e9c0f6073e0e983)
@@ -360,5 +512,12 @@ var num2: Int = when {
 - [型チェックとキャスト](https://kotlindive.hatenablog.jp/entry/2018/02/01/192212)
 ### 型のキャスト（アンセーフキャスト）
 - [型チェックとキャスト](https://kotlindive.hatenablog.jp/entry/2018/02/01/192212)
-### 型変換
-- 
+
+## 制御構文
+### when文
+- [when 式による条件分岐](https://maku77.github.io/kotlin/basic/when.html)
+### for文
+- [Kotlinでループ処理](https://qiita.com/NagaokaKenichi/items/b68b699dc0b792754d7b)
+- [【Kotlin練習問題】forループのためのイテレーターの実装](https://codelabsjp.net/kotlin-practice-iterator/)
+### 高階関数を用いたループ
+- [Kotlinでループ処理](https://qiita.com/NagaokaKenichi/items/b68b699dc0b792754d7b)
