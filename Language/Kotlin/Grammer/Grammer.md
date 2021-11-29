@@ -482,11 +482,33 @@ array.forEach {
 
 # クラス
 
+クラスは以下を含めることができる。
+
+- クラスメンバ
+  - コンストラクタと初期化ブロック
+  - 関数
+  - プロパティ
+  - ネストされたインナークラス
+  - オブジェクトの宣言
+
+Kotlinのクラスの記述方法は以下の通り。
+
+```kotlin
+class Person constructor (val name: String, val age: Int)
+```
+
+プライマリコンストラクタがアノテーションや可視性修飾子を持っていない場合は、`constructor`は省略可能。  
+丸括弧内を`プライマリコンストラクタ`といい、上記の例では`name`と`age`というプロパティを宣言している。また、インスタンスを作成する際に、このコンストラクタに渡した値で自動的に初期化される。
+
+クラスやプロパティは自動的に`public`アクセスが可能になるため、呼び出し側では`インスタンス名.name`, `インスタンス名.age`のような形でプロパティを利用できる。
+
+## コンストラクタ
+
 Kotlinのコンストラクタには以下の2種類がある。
 - プライマリコンストラクタ（primary constructor）
 - セカンダリコンストラクタ（secondary constructor）
 
-## プライマリコンストラクタ（primary constructor）
+### １．プライマリコンストラクタ（primary constructor）
 
 以下のように、丸括弧に囲まれたコードブロックをプライマリコンストラクタという。  
 ※`constructor`は省略するのが一般的。
@@ -505,7 +527,7 @@ class Person constructor(val fullname: String, val age: Int )
 val person = Person("JetBrain", 21)
 ```
 
-### ■パターン１
+#### ■パターン１
 
 プライマリコンストラクタを明示的に記述する場合は以下のようになる。
 
@@ -533,7 +555,7 @@ person.feature() //JetBrains : 21
 `init`は初期化ブロックの実装個所。  
 初期化ブロックでは、生成された時に実行される初期化コードを含んでおり、プライマリコンストラクタと一緒に利用されることを意図されている。
 
-### ■パターン２
+#### ■パターン２
 
 コンストラクタ引数に`var`や`val`を指定することでプロパティの宣言と初期化を同時に行うことができる。
 
@@ -549,7 +571,7 @@ val person: Person  = Person("JetBrains", 21)
 person.feature() //JetBrains : 21
 ```
 
-### ■パターン３
+#### ■パターン３
 
 コンストラクタ引数にデフォルト値を設定することも可能。
 
@@ -566,7 +588,7 @@ val person: Person  = Person()
 person.feature() //no-name : 0
 ```
 
-## セカンダリコンストラクタ（secondary constructor）
+### セカンダリコンストラクタ（secondary constructor）
 
 ***TODO : セカンダリコンストラクタの使用例を調べる。***
 
@@ -580,7 +602,7 @@ person.feature() //no-name : 0
 constructor (引数: データ型): this(引数)
 ```
 
-### ■パターン１
+#### ■パターン１
 
 セカンダリコンストラクタが１つの場合。
 
@@ -601,7 +623,7 @@ val person: Person = Person("JetBrain")
 person.feature() //JetBrain : 21
 ```
 
-### ■パターン２
+#### ■パターン２
 
 セカンダリコンストラクタが２つの場合。
 
@@ -609,9 +631,156 @@ person.feature() //JetBrain : 21
 
 ## 継承
 
-## インターフェース
+Kotlinの全てのクラスは共通の`Any`スーパークラスを持つ。  
+これはスーパータイプの宣言がないクラスのデフォルトのスーパークラスとなる。
+
+```kotlin
+class Person //Anyから暗黙の継承
+```
+
+スーパークラスを明示的に宣言するには以下のように記述する。  
+`open`アノテーションを付けることによって、他のクラスがこのクラスを継承することができる。  
+デフォルトでは全てのクラスは`final`になっており、継承可能とするには`open`を明示的に指定する必要がある。
+
+```kotlin
+//スーパークラス
+open class Base(p: Int)
+
+//継承
+class Derived(p: Int) : Base(p)
+```
+
+上記例の場合、コンストラクタの引数（`Derived(p: Int)`）によって基底の型を初期化している。  
+※インスタンス化の際に`引数p`に渡される値によって`Base(p)`も初期化している。
+
+仮にプライマリコンストラクタを持たない場合、セカンダリコンストラクタはそれぞれ基底の型を`super`キーワードを使用して初期化するか、他の初期化してくれるコンストラクタに移譲しなければならない。
+
+```kotlin
+class MyView: View {
+    constructor(ctx: Content) : super(ctx) {
+
+    }
+    constructor(ctx: Content, attrs: AttributeSet) : super(ctx, attrs) {
+
+    }
+}
+```
+
+### ■オーバーライド
+
+スーパークラスのメソッドをサブクラスで再定義しなおしたい場合は、以下のアノテーションが必要。
+
+- オーバーライド可能なメソッドについて、スーパークラスにて`open`アノテーションを指定する。
+- サブクラスにてオーバーライドするメソッドにて、`override`アノテーションを指定する。
+- `open`アノテーションを持たないクラスは`open`メンバも持つことができない。
+
+```kotlin
+//スーパークラス
+open class Base {
+    //サブクラス内でオーバーライド可能なメソッド
+    open fun v() {
+
+    }
+    //サブクラス内でオーバーライド不可能なメソッド
+    fun nv() {
+
+    }
+}
+
+//継承
+class Derived() : Base() {
+    //オーバーライドを明示的に指定。
+    override fun v() {
+
+    }
+}
+```
+
+`override`しているメンバはそれ自体が`open`なので、サブクラス内でオーバーライドされる可能性がある。  
+これを防ぐには、`final`アノテーションを指定する。
+
+```kotlin
+open class Derived() : Base() {
+    //サブクラス内でオーバーライドを禁止。
+    final override fun v() {
+
+    }
+}
+```
+
+オーバーロードはプロパティにも適用可能。  
+プライマリコンストラクタでプロパティ宣言の一部として`override`アノテーションを使用可能。
+
+- `val`プロパティを`var`プロパティでオーバーロード可能。その逆も同様。
+
+```kotlin
+open class Base {
+    //オーバーライド可能であることを明示的に示す。
+    open val x: Int
+        get {
+
+        }
+}
+
+//プライマリコンストラクタにてオーバーライドアノテーションを指定。
+class SubClass (override val x: Int) : Base {
+
+}
+```
+
+複数のクラスやインターフェースを継承する場合、以下の方法で実装する。
+
+- カンマ区切り（`,`）によってクラスやインターフェースを記載する。
+- 複数のクラスやインターフェースから継承する場合、同じメソッド名のものが存在する場合は、サブクラスでオーバーライドする必要がある。
+    - メソッド名が同じものを複数のクラスやインターフェースからオーバーライドする場合、以下のように指定する。
+        - `super<クラス名>`
+        - `super<インターフェース名>`
+- インターフェースのメンバはデフォルトで`open`が適用されている。
+
+```kotlin
+open class A {
+    open fun f() {
+        println("A")
+    }
+
+    fun a() {
+        println("a")
+    }
+}
+
+interface B {
+    //インターフェースではopenは不要
+    fun f() {
+        println("B")
+    }
+
+    fun b() {
+        println("b")
+    }
+}
+
+//スーパークラスの両方にf()メソッドが存在するため、クラスCでは曖昧さ排除のためf()をオーバーライドして再定義する必要がある。
+class C() : A(), B {
+    
+    override fun f() {
+        super<A>.f() //A.f() を呼び出す
+        super<B>.f() //B.f() を呼び出す
+    }
+}
+```
+
+### ■インターフェース
+
+### ■抽象クラス
+
+抽象クラスは`abstract`を指定して定義することが可能。  
+また、抽象クラスは`open`を指定せずともオーバーライドすることができる。
 
 ## 静的メンバへのアクセス
+
+## 可視性修飾子
+
+## getter, setter
 
 # object
 
@@ -654,6 +823,13 @@ person.feature() //JetBrain : 21
 - [Kotlinでループ処理](https://qiita.com/NagaokaKenichi/items/b68b699dc0b792754d7b)
 
 ## クラス
-### 
+### コンストラクタ
 - [【Kotlin】コンストラクタ（プライマリ / セカンダリ）](https://zenn.dev/tm35/articles/38780504cacdd5)
 - [Kotlin - コンストラクタ](https://blog.y-yuki.net/entry/2019/05/25/093000)
+### 継承
+- [クラスと継承](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/classes.html)
+### getter, setter
+- [[Kotlin]クラスにカスタムゲッター/セッターを定義する](https://pouhon.net/kotlin-getter/3223/)
+- [Kotlinにおけるクラス、プロパティ、コンストラクタ、データクラス、シングルトン](https://atmarkit.itmedia.co.jp/ait/articles/1804/02/news009.html)
+## 可視性修飾子
+- [可視性修飾子](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/visibility-modifiers.html)
