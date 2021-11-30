@@ -771,6 +771,93 @@ class C() : A(), B {
 
 ### ■インターフェース
 
+Kotlinでインターフェースを実装するには、`interface`修飾子を使用する。
+
+```kotlin
+interface Printable {
+    fun print()
+    fun printDetail()
+}
+```
+
+インターフェースをクラスで実装するには以下の通り。
+- クラス名の後に`:（コロン）`を記述してその後ろにインターフェース名やスーパークラス名を指定する。
+- `override`を記載してメソッドを実装する。
+  - `override`修飾子はスーパークラスやインターフェースをオーバーライドするメソッドやプロパティを指定するために利用。Kotlinでは`override`修飾子は省略不可能。
+- インターフェースに定義のあるメソッドは、実装クラスにて必ずオーバーライドする必要がある。
+
+```kotlin
+class KotlinPrinter : Printable {
+    //interfaceに実装のあるprint(), printDetail()のどちらか片方でも実装がなければコンパイルエラー
+    override fun print() {
+        println("Kotlin summay")
+    }
+    override fun printDetail() {
+        println("Kotlin detail print")
+    }
+}
+```
+
+インターフェースは、デフォルトの実装を持たせることができる。  
+デフォルトの実装をもつメソッドを実装クラス側でオーバーライドしなければ、インターフェースに定義したデフォルトの処理が実行される。
+
+```kotlin
+interface Printable {
+    //interfaceにてデフォルトの実装
+    fun print() {
+        println("Hello World")
+    }
+    fun printDetail()
+}
+
+class KotlinPrinter : Printable {
+    override fun printDetail() {
+        println("Kotlin detail print")
+    }
+}
+
+val printer: KotlinPrinter = KotlinPrinter()
+//デフォルトの実装が適用される。
+printer.print()  //Hello World
+printer.printDetail() //Kotlin detail print
+```
+
+複数のインターフェースやスーパークラスを継承する場合、同じメソッド名の処理については必ずオーバーライドしなければならない。  
+片方のインターフェースのみにデフォルトの実装がある場合は、オーバーライドしなくても、デフォルトの処理が継承される。  
+また、インターフェースで実装されているデフォルトの処理を実装クラスから呼び出す場合は、`super<インターフェース名>.メソッド名`で行う。
+
+```kotlin
+interface Printable {
+    //interfaceにてデフォルトの実装
+    fun print() {
+        println("Hello World")
+    }
+    fun printDetail()
+}
+
+interface Display {
+    //interfaceにてデフォルトの実装
+    fun print() {
+        println("Hello Display")
+    }
+}
+
+//PrintableとDisplayの2つのインターフェースを実装
+class KotlinPrinter : Printable, Display {
+    //fun print()をオーバーライドしなければ、コンパイルエラーになる
+    override fun print() {
+        super<Printable>.print()
+        super<Display>.print()
+    }
+    override fun printDetail() {
+        println("Kotlin detail print")
+    }
+}
+```
+
+
+***TODO:インターフェース内のプロパティ***
+
 ### ■抽象クラス
 
 抽象クラスは`abstract`を指定して定義することが可能。  
@@ -828,6 +915,9 @@ class C() : A(), B {
 - [Kotlin - コンストラクタ](https://blog.y-yuki.net/entry/2019/05/25/093000)
 ### 継承
 - [クラスと継承](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/classes.html)
+### インターフェース
+- [インターフェース](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/interfaces.html)
+- [Kotlin - インターフェース](https://blog.y-yuki.net/entry/2019/05/20/100000)
 ### getter, setter
 - [[Kotlin]クラスにカスタムゲッター/セッターを定義する](https://pouhon.net/kotlin-getter/3223/)
 - [Kotlinにおけるクラス、プロパティ、コンストラクタ、データクラス、シングルトン](https://atmarkit.itmedia.co.jp/ait/articles/1804/02/news009.html)
