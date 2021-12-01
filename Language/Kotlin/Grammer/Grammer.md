@@ -855,7 +855,6 @@ class KotlinPrinter : Printable, Display {
 }
 ```
 
-
 ***TODO:インターフェース内のプロパティ***
 
 ### ■抽象クラス
@@ -863,11 +862,87 @@ class KotlinPrinter : Printable, Display {
 抽象クラスは`abstract`を指定して定義することが可能。  
 また、抽象クラスは`open`を指定せずともオーバーライドすることができる。
 
-## 静的メンバへのアクセス
-
 ## 可視性修飾子
 
 ## getter, setter
+
+Kotlinでプロパティを定義する場合、以下のように記述する。
+
+- `name`プロパティを公開している。
+- Personクラス内では、メンバー変数`_name`として保持。
+  - プロパティの値を保持するデータストレージ（メンバー変数）を`バッキングフィールド（backing field）`という。
+- `get()`では、プロパティの値を返すように実装。
+- `set(value)`は、外部からプロパティに値を設定した際に、`value`に自動的に値がはいる。この値をバッキングフィールドに設定できる。
+- Kotlinでは、getter, setterともに省略可能だが、`set()`を実装することによって、入力値の制御を行うことが可能。
+  - `check()`, `require()`にて制御可能。
+
+```kotlin
+class Person {
+    private var _name: String = ""
+
+    var name: String
+        get() {
+            return _name
+        }
+        set(value) {
+            //setterを実装することで、以下のように入力値の制御が可能。
+            require(value.length > 0)
+            _name = value
+        }
+}
+
+fun main() {
+    val person: Person = Person()
+
+    person.name = "JetBrains"
+    println(person.name) //JetBrains
+
+    //require(value.length > 0)によって、空白を入力しようとすると、例外が発生する。
+    person.name = ""
+    println(person.name)
+
+    //以下の例外が発生。
+Exception in thread "main" java.lang.IllegalArgumentException: Failed requirement.
+}
+```
+
+Kotlinでは、バッキングフィールドを明示的に作成せずとも必要に応じて自動的に作成することができる。
+
+以下のコードは上記のコードと同様の処理となる。
+- バッキングフィールド（メンバー変数）を宣言していない。
+- バッキングフィールドの代わりに`field`を使用。
+  - Kotlinではあるプロパティを実装するために必要なバッキングフィールドは必要に応じて暗黙的に自動生成され、getter, setterで`field`にてそれにアクセスできる。
+
+```kotlin
+calss Person {
+    var name: String = ""
+        get() {
+            return field
+        }
+        set(value) {
+            require(value.length > 0)
+            field = value
+        }
+}
+```
+
+また、`require(value.length > 0)`のように入力値や出力値を特別制御する必要がない場合は、getter, setterは省略可能。
+
+```kotlin
+class Person {
+    var name: String = ""
+}
+
+fun main() {
+    val person: Person = Person()
+
+    person.name = "JetBrains"
+    println(person.name) //JetBrains
+}
+```
+
+上記の場合、`name`という変数の値を外部から直接書き換えているかのように見えるが、内部的にはバッキングフィールドが自動で作成されており、`field`を通じて間接的にクラス内の`name`の値を書き換えたり呼び出したりしている。
+
 
 # object
 
@@ -910,6 +985,7 @@ class KotlinPrinter : Printable, Display {
 - [Kotlinでループ処理](https://qiita.com/NagaokaKenichi/items/b68b699dc0b792754d7b)
 
 ## クラス
+- [これがKotlinのオブジェクト指向プログラミングか！と思ったこと](https://qiita.com/syumiwohossu/items/60a7c50af868a551f2f2)
 ### コンストラクタ
 - [【Kotlin】コンストラクタ（プライマリ / セカンダリ）](https://zenn.dev/tm35/articles/38780504cacdd5)
 - [Kotlin - コンストラクタ](https://blog.y-yuki.net/entry/2019/05/25/093000)
@@ -919,6 +995,8 @@ class KotlinPrinter : Printable, Display {
 - [インターフェース](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/interfaces.html)
 - [Kotlin - インターフェース](https://blog.y-yuki.net/entry/2019/05/20/100000)
 ### getter, setter
+- [クラスの実装 〜 プロパティとバッキングフィールド](https://kotlin.keicode.com/lang/classes-properties.php)
+- [13日目：プロパティとフィールド](https://kotlin.hatenablog.jp/entry/2012/12/13/231343)
 - [[Kotlin]クラスにカスタムゲッター/セッターを定義する](https://pouhon.net/kotlin-getter/3223/)
 - [Kotlinにおけるクラス、プロパティ、コンストラクタ、データクラス、シングルトン](https://atmarkit.itmedia.co.jp/ait/articles/1804/02/news009.html)
 ## 可視性修飾子
