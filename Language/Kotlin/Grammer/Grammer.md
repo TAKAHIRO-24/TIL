@@ -670,13 +670,16 @@ class MyView: View {
 
 スーパークラスのメソッドをサブクラスで再定義しなおしたい場合は、以下のアノテーションが必要。
 
-- オーバーライド可能なメソッドについて、スーパークラスにて`open`アノテーションを指定する。
+- オーバーライド可能なプロパティ、メソッドについて、スーパークラスにて`open`アノテーションを指定する。
 - サブクラスにてオーバーライドするメソッドにて、`override`アノテーションを指定する。
 - `open`アノテーションを持たないクラスは`open`メンバも持つことができない。
 
 ```kotlin
 //スーパークラス
 open class Base {
+    //サブクラス内でオーバーライド可能なプロパティ
+    open val a: Int = 1
+
     //サブクラス内でオーバーライド可能なメソッド
     open fun v() {
 
@@ -862,7 +865,10 @@ class KotlinPrinter : Printable, Display {
 抽象クラスは`abstract`を指定して定義することが可能。  
 また、抽象クラスは`open`を指定せずともオーバーライドすることができる。
 
-## 可視性修飾子
+## 静的メンバへのアクセス
+
+KotlinはJavaと違い`static`な変数や定数、メソッドを定義することはできない。  
+Kotlinではクラスブロック外に変数、定数、メソッドを定義することができるため`static`メソッドの代わりに使用することが可能。
 
 ## getter, setter
 
@@ -943,8 +949,112 @@ fun main() {
 
 上記の場合、`name`という変数の値を外部から直接書き換えているかのように見えるが、内部的にはバッキングフィールドが自動で作成されており、`field`を通じて間接的にクラス内の`name`の値を書き換えたり呼び出したりしている。
 
+## 可視性修飾子
+
+以下は`可視性修飾子`を持つことが可能。
+- クラス `class`
+- オブジェクト `object`
+- インターフェース `interface`
+- コンストラクタ `constructor`
+- 関数 `fun`
+- プロパティ `property`
+  - セッター `set()`
+
+Kotlinには以下の4つの可視性修飾子が存在する。  
+明示的な修飾子が存在しない場合に適用されるデフォルトの可視性は`public`となる。  
+Javaのデフォルトの可視性である`パッケージプライベート`（アクセス修飾子を省略した状態を、パッケージ内部からのみ自由にアクセスできるという意味でパッケージプライベートという）はKotlinには存在しない。  
+Kotlinにおけるパッケージ`package`は可視性の制御には利用されず、名前空間にコードをまとめるためだけに使用される。
+
+- `public`
+  - 全てのクラスからアクセスできる。
+  - 明示的に修飾子を指定しない場合は`public`がデフォルトの可視性となる。
+- `internal`
+  - 同じモジュール内ならどこからでもアクセス可能。
+  - `module`とは、Kotlinのファイルが一体としてコンパイルされるまとまりのこと。Intellij IDEAのモジュールやEclipseのプロジェクト、MavenやGradleのプロジェクトで一度にコンパイルされるファイルのまとまりがそれに該当する。
+  - Javaには存在しない。
+- `protected`
+  - トップレベルの宣言では使用不可能。
+  - Javaでは同一パッケージ内からでも`protected`なメンバにアクセスできるが、Kotlinでは`protected`なメンバはそのクラスとサブクラスからのみ参照可能となる。
+- `private`
+  - その宣言を含むファイル内でのみアクセス可能。
+  - Javaではトップレベルのクラスに`private`修飾子をつけることは不可能だが、Kotlinでは可能。
+
+|可視性修飾子|クラスメンバ|トップレベル（パッケージ）で宣言した場合|
+|:-:|:-:|:-:|
+|public（デフォルト）|どこからでも参照可能|どこからでも参照可能|
+|internal|モジュール内からのみ参照可能|モジュール内からのみ参照可能|
+|protected|そのクラスとサブクラスから参照可能|-|
+|private|クラス内からのみ参照可能|ファイル内からのみ参照可能|
+
+### ■トップレベル（パッケージ）
+
+関数、プロパティやクラス、オブジェクトやインターフェースは、トップレベル、つまり`パッケージ（package）`内部で直接宣言することができる。
+
+```kotlin
+//ファイル名： example.kt
+
+package foo
+
+private fun foo() {}    //example.kt の中で見える
+
+public var bar: Int = 5 //プロパティはどこからでも見える
+    private set         //セッターは example.kt の中でのみ見える
+
+internal val baz = 6    //同じモジュール内でのみ見える
+```
+
+### ■クラスメンバ（クラスとインターフェース）
+
+クラス内で宣言した場合
+
+- `private`
+  - そのクラス内（そのすべてのメンバーを含む）でのみ見える
+- `protected`
+  - `private`と同じ＋サブクラス内でも見える
+  - `protected`のメンバをオーバーライドして、明示的に可視性を指定しない場合、オーバーライドするメンバも、`protected`の可視性になる。
+- `internal`
+  - `internal`クラスを見るそのモジュール内の任意のクライアントは`internal`メンバが見える
+- `public`
+  - `public`宣言するクラスを見ている任意のクライアントは、`public`のメンバが見える
+
+```kotlin
+open class Outer {
+    private val a = 1
+    protected open val b = 2
+    internal val c = 3
+    val d = 4  //デフォルトでpublic
+
+    protected class Nested {
+        public val e: Int = 5
+    }
+}
+
+class Subclass : Outer() {
+    //privateの a は見えない
+    //protectedの b , internalの c , publicの d は見える
+    //protectedの Nested と publicの e は見える
+
+    override val b = 5 //'b' は自動的に protected となる
+}
+
+class Unrelated(o: Outer) {
+    //private の o.a, protected の o.b は見えない（UnrelatedクラスはOuterクラスのサブクラスではないため）
+    //internal の o.c, public の o.d は見える（同じモジュール内なので）
+    //Protected の Outer.Nasted, Nasted::e は見えない
+}
+```
+
+### ■コンストラクタ
+
+クラスのプライマリコンストラクタの可視性を指定する場合は、以下のようにする。   
+この場合、`constructor`キーワードを付加しなければならない。
+
+```kotlin
+class C private constructor(a: Int) { ... }
+```
 
 # object
+
 
 # ラムダ式
 
@@ -1001,3 +1111,4 @@ fun main() {
 - [Kotlinにおけるクラス、プロパティ、コンストラクタ、データクラス、シングルトン](https://atmarkit.itmedia.co.jp/ait/articles/1804/02/news009.html)
 ## 可視性修飾子
 - [可視性修飾子](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/visibility-modifiers.html)
+- [Kotlin - 可視性](https://blog.y-yuki.net/entry/2019/05/22/090000)
