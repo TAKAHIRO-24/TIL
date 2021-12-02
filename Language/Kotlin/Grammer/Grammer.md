@@ -868,7 +868,53 @@ class KotlinPrinter : Printable, Display {
 ## 静的メンバへのアクセス
 
 KotlinはJavaと違い`static`な変数や定数、メソッドを定義することはできない。  
-Kotlinではクラスブロック外に変数、定数、メソッドを定義することができるため`static`メソッドの代わりに使用することが可能。
+Javaにおける`static`とは以下の意味がある。
+
+- `static`がついているメソッドを`staticメソッド`という。ついていないメソッドを`インスタンスメソッド`という。
+- `staticメソッド`は、インスタンスを生成しなくて呼び出すことが可能。
+  - `クラス名.メソッド名()`で呼び出すことが可能。
+- `static変数`は、インスタンスを生成せずに使える変数。
+  - `クラス名.変数名`で呼び出すことが可能。
+
+Kotlinで`static`と同様の処理を行うには、以下の方法がある。
+
+- Kotlinではクラスブロック外に変数、定数、メソッドを定義することができるため`static`メソッドの代わりに使用することが可能。
+  - クラス名の修飾なしに各定義を参照することが可能。
+- クラス内に`companion object`（コンパニオンオブジェクト）キーワードを使用したブロックを作成し、ブロック内に変数、定数、メソッドを定義する。
+  - クラス名の修飾を使って各定義を参照することが可能。
+  - `クラス名.メソッド名()`で使用可能。
+
+```kotlin
+package com.sample
+
+//クラス外の定数定義
+const val FOO = 10
+//クラス外のメソッド定義
+fun bar (a: Int): Int {
+    return a * 2
+}
+
+class Hoge {
+    //コンパニオンオブジェクトを使ったメソッドの定義
+    companion object {
+        fun fuga (b: Int): Int {
+            return b * 3
+        }
+    }
+}
+
+//Hogeクラス(Hoge.kt)の要素を参照するクラス
+class Hogehoge {
+    fun runMethod() {
+        //Hoge.ktのbarメソッドを参照
+        val res1 = bar(FOO)       //a * 2 = 10 * 2 = 20
+        //Hoge.ktのfugaメソッドを参照
+        val res2 = Hoge.fuga(FOO) //b * 3 = 10 * 3 = 30
+    }
+}
+```
+
+`const`を付けて記述した場合は、Javaにおいて`static`な要素として扱われるのに対し、`const`なしで記述したものはJavaに変換されたときに`アクセサメソッド（getter, setter）`が定義されてしまうので、できるだけ`const`を付けて記述したほうがよい。
 
 ## getter, setter
 
