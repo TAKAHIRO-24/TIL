@@ -1101,17 +1101,267 @@ class C private constructor(a: Int) { ... }
 
 # object
 
+Kotlinでは`object`を以下の用途で使用する。
+
+- `companion object`
+  - Javaでいう`static`な変数やメソッドを定義することができる。
+- `anonymous object`（無名オブジェクトの定義）
+- シングルトンの定義
+  - インスタンスが一つしか生成されないことを保証保証するクラス。
+
+## コンパニオンオブジェクト（companion object）
+
+クラス内でスタティックメソッドを定義するのに使用。
+
+```kotlin
+class Math {
+    companion object {
+        fun add(a: Int, b: Int) = a + b
+    }
+}
+
+println(Math.add(3,5)) //8
+```
+
+## 無名オブジェクト（anonymous object）
+
+クラスの無名インスタンスを生成する。  
+元クラスのプロパティやメソッドをオーバーライドすることも可能。  
+下記の例ではMouseAdapterクラスをオーバーライドし、その無名インスタンスを作成し、addMouseListener()の引数として渡している。
+
+```kotlin
+window.addMouseListener(object : MouseAdapter() {
+    override fun mouseClicked(e: MouseEvent) { /*...*/ }
+    override fun mouseEntered(e: MouseEvent) { /*...*/ }
+})
+```
+
+## シングルトン
+
+唯一のインスタンスを持つシングルトンクラスを宣言する。
+
+```kotlin
+object Config {
+    var maxCount = 100
+}
+
+println(Config.maxCount) //100
+```
+
+シングルトンのメソッドはスタティックメソッドのように、`クラス名.メソッド名`で呼び出すことが可能。
+
+```kotlin
+object Foo {
+    fun hello() {
+        println("Hello!")
+    }
+}
+
+fun main() {
+    Foo.hello() //Hello!
+}
+```
 
 # ラムダ式
 
-# <div id="scope">スコープ関数</div>
+## 第一級オブジェクト
 
-# 例外
+Kotlinの関数は第一級オブジェクトである。  
+`第一級オブジェクト`とは
+- 変数や定数に代入できる。
+- 名前がなくてもかまわない。
+- 関数のパラメータ（引数）として使える。
+- 関数の戻り値として使える。
+
+例えば、Int型の「1」は第一級オブジェクト。
+
+```kotlin
+var x: Int = 1 //変数に代入できる。
+
+fun example(num: Int): Int { //関数の引数として使える。
+    return num  //関数の戻り値として使える。
+}
+
+println(example(x))
+```
+
+`ラムダ式`はメソッドの定義を式として扱い、即時実行された結果返す機能をさす。  
+`関数型リテラル`とも呼ばれることがあり、関数が宣言されたの式として変数に代入された形となる。  
+使用する際には、`変数名（引数）`の形式で参照する。
+
+```kotlin
+//ラムダ式の定義
+val sum = {x: Int, y: Int -> x + y}
+
+//使用
+val total: Int = sum(3,4) //７
+```
+
+以下のような形でも使用できる。
+
+```kotlin
+//ラムダ式の定義
+val sum: (Int, Int) -> Int = {x, y -> x + y}
+
+//使用
+val total: Int = sum(3,4) //７
+```
+
+コレクション型のデータから特定の条件に該当すデータのみを抽出する際に使用可能。  
+ラムダ式を使う場合に引数の値が一つの場合、暗黙的に一時変数名`it`として設定されている。  
+
+```kotlin
+val tempList = listOf(1,2,3)
+
+tempList.count{it % 2 == 1} //1,3
+tempList.filter{it == 2} //2
+```
+
+# <div id="scope">スコープ関数</div>
+対象オブジェクトやスコープ関数に渡した引数に限定して即時関数を実行する機能。
+
+|関数/項目|操作オブジェクト|戻り値|
+|:-:|:-:|:-:|
+|let|it|指定可能|
+|with|this|指定可能|
+|run|this|指定可能|
+|apply|this|操作オブジェクト|
+|also|it|操作オブジェクト|
+
+## let関数
+
+`let`関数の定義は以下の通り。
+
+```kotlin
+public inline fun <T, R> T.let(f: (T) -> R): R = f(this)
+```
+
+自分自身を引数としてラムダ式を実行する機能。ラムダブロック最後に記述されているオブジェクト（変数）を戻り値として返却する。  
+
+```kotlin
+//[Object].let {[処理]}
+val fuga = 20
+val hoge = fuga.let {it + 20} //hoge: 30
+```
+
+また、Null許容変数のUnwrappe（Nullチェック）によく使用される。
+
+```kotlin
+val hoge = fuga?.let {[fugaがNullではない時の処理]} ?: {[fugaがNullのときの処理]}
+```
+
+例えば、以下の場合
+- fooがNullである場合、`?.`呼び出しにより`let`を実行せず、`Null`を返す。
+- fooがNullでない場合、`let`が実行され、`it.toUpperCase()`によりfooの大文字表現が返される。
+
+```kotlin
+val upperCase: String? = foo?.let { it.toUpperCase() }
+```
+
+以下のように記述することも可能。
+
+```kotlin
+val upperCase: String? = foo?.let(String::toUpperCase)
+```
+
+## with関数
+
+`with`関数の定義は以下の通り。
+
+```kotlin
+public inline fun <T, R> with(receiver: T, f: T.() -> R): R = receiver.f()
+```
+
+- 第一引数に任意の型`T`をとる。
+- 第二引数に`T`をレシーバとする関数をとる。  
+  以下の例では、`{this.toUpperCase()}`の`this`は`"hoge"`を指す。  
+  `this`は省略可能。
+- 処理の最後に記述されているオブジェクト（変数）が戻り値になる。
+
+```kotlin
+val s: String = with("hoge") { this.toUpperCase() }
+println(s) //HOGE
+```
+
+あるインスタンスに対する複数の操作を簡潔に記述することが可能。  
+例えば、インスタンスを生成し、各種設定を行ってから実際に使用する場合は以下のように記述する。
+
+```kotlin
+val flame: JFrame = with(JFlame("My App")) {
+    size = Dimension(600, 400)
+    defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+    setVisible(true)
+    this //JFlameクラスのインスタンスを返している
+}
+```
+
+`let`関数を使用した場合、`size`や`setVisible`にアクセスする際にレシーバとして`it`を指定して`it.size`, `it.setVisible`とする必要がある。
+
+## run関数
+
+`run`関数の定義は以下の通り。
+
+```kotlin
+public inline fun <T, R> T.run(f: T.() -> R): R = f()
+```
+
+`let`関数と`with`関数が合わさったような機能。
+
+```kotlin
+val s: String = "hoge".run { toUpperCase() }
+println(s) //HOGE
+```
+
+## apply関数
+
+`apply`関数の定義は以下の通り。
+
+```kotlin
+public inline fun <T> T.apply(f: T.() -> Unit): T { f(); return this}
+```
+
+`apply`関数は引数として受け取った関数を実行するが、返り値はレシーバとなる。  
+そのため、以下の場合、変数`s`は小文字の`hoge`のまま。
+
+```kotlin
+val s: String = "hoge".apply { toUpperCase() }
+println(s) //hoge
+```
+
+`with`関数と異なる点は、`apply`関数はレシーバを返してほしいときに使う。  
+`with`の使用例では引数の関数内の最後に戻り値として`this`を明記していた。  
+`apply`はレシーバを返すので`this`を明記する必要がない。
+
+```kotlin
+val flame: JFlame = JFrame("My App").apply {
+    size = Dimension(600, 400)
+    defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+    setVisible(true)
+}
+```
+
+## also関数
+
+`also`関数の定義は以下の通り。
+
+```kotlin
+public inline fun <T> T.also(f: (T) -> Unit): T { f(this); return this}
+```
+
+```kotlin
+val s: String = "hoge".also { it.toUpperCase() }
+println(s) /hoge
+```
+
+# Generics
+
 
 
 # 参照
 ## 全般
 - [Android programing getstart](https://kuririnz.github.io/AndroidCourse/android/12-KotlinBasic/#%E5%AD%A6%E7%BF%92%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88)
+- [Kotlin文法 - 基本](https://qiita.com/k5n/items/acfaff8b56faf57971f7)
+- [Kotlinの公式リファレンスを日本語化してみた[前編]](https://qiita.com/dogwood008/items/6e8d3225ea9bb0fe3099)
 
 ## 変数
 ### オプショナル（Null-Safety）
@@ -1158,3 +1408,11 @@ class C private constructor(a: Int) { ... }
 ## 可視性修飾子
 - [可視性修飾子](https://dogwood008.github.io/kotlin-web-site-ja/docs/reference/visibility-modifiers.html)
 - [Kotlin - 可視性](https://blog.y-yuki.net/entry/2019/05/22/090000)
+## object
+- [とほほのKotlin入門](https://www.tohoho-web.com/ex/kotlin.html#:~:text=p%20from%20Example%0A%7D-,%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88(object),-object%20%E3%81%AB%E3%81%AF)
+- [[Kotlin]オブジェクト宣言 – Kotlin流シングルトンの実装](https://pouhon.net/kotlin-singleton/3414/)
+## ラムダ式
+- [Kotlin文法 - 関数とラムダ](https://qiita.com/k5n/items/964d765767a65cc3de5b#%E3%83%A9%E3%83%A0%E3%83%80%E5%BC%8F%E3%81%A8%E7%84%A1%E5%90%8D%E9%96%A2%E6%95%B0)
+- [Kotlin スコープ関数 用途まとめ](https://qiita.com/ngsw_taro/items/d29e3080d9fc8a38691e)
+## Generics
+- [今更聞けないKotlin Generics入門](https://zenn.dev/96mame/articles/21e2f8c95947e9581192)
