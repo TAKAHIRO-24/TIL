@@ -1355,7 +1355,39 @@ println(s) /hoge
 
 # Generics
 
+Genericsの変数名は以下のように使い分けされている。  
+ただし、その他の変数名を使用したとしても意味や機能が変化するわけではない。
 
+|変数名|使用状況|詳細|
+|:-:|:-:|:-:|
+|T|Type|タイプ。型をパラメータとするときに使用。|
+|E|Element|要素。Listなどで使用。|
+|K|Key|キー。Mapなどで使用。|
+|V|Value|値。Mapなどで使用。|
+|R|Result|戻り値。|
+
+## Genericsとは
+
+`総称型`と呼ばれ、型をパラメータとすることを可能にする。  
+`<T>`のように`<>`の部分がGenerics。
+
+以下は、型の変数を保存するBoxクラス。
+
+```kotlin
+class Box<T>(t: T) {
+    var value: T = t
+}
+```
+
+これによってインスタンス生成時に保存する型を定義することが可能。
+
+```kotlin
+//Int型
+val box: Box<Int> = Box<Int>(1)
+
+//String型
+val box: Box<String> = Box<String>("test")
+```
 
 # 参照
 ## 全般
