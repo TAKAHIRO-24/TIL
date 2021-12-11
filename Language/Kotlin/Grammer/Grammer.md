@@ -1448,3 +1448,4 @@ val box: Box<String> = Box<String>("test")
 - [Kotlin スコープ関数 用途まとめ](https://qiita.com/ngsw_taro/items/d29e3080d9fc8a38691e)
 ## Generics
 - [今更聞けないKotlin Generics入門](https://zenn.dev/96mame/articles/21e2f8c95947e9581192)
+- [[Kotlin]はじめてのジェネリクス クラスや関数で使ってみよう！](https://pouhon.net/kotlin-generics/3627/)
