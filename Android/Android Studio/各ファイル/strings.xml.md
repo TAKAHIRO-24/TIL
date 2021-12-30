@@ -39,3 +39,18 @@ OSの言語設定を英語にした場合、以下のように表示される。
 アプリのタイトルが変更されていることが確認できる。
 
 また、`values-en＞strings.xml`に記載がなく、`values＞strings.xml`に記載のあるものを使用している（例えば、上記の`app_neme`の記載が`values-en＞strings.xml`には存在しない）場合、OSの言語設定が英語になっていても、デフォルトで`values＞strings.xml`が読み込まれる。
+
+`strings.xml`には以下の記法がある。
+
+- 
+```XML
+<string name="...">...</string>
+```
+- `spnner`で使用。
+```XML
+<string-array name="...">
+    <item>...</item>
+    <item>...</item>
+    <item>...</item>
+</string-array>
+```
