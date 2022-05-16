@@ -1389,6 +1389,37 @@ val box: Box<Int> = Box<Int>(1)
 val box: Box<String> = Box<String>("test")
 ```
 
+# その他
+## 文字列操作
+
+### 追加
+```kotlin
+val sb = StringBuilder().also {
+    it.append("abc")
+    it.append("def")
+    it.append("ghi")
+}
+
+println(sb.toString()) //abcdefghi
+```
+
+### 挿入
+```kotlin
+val sb = StringBuilder().also {
+    it.append("abc")
+    it.append("ghi")
+}
+
+println(sb.toString()) //abcghi
+
+sb.insert(2,"def")
+println(sb.toString()) //abdefcghi
+
+```
+
+### 削除
+
+
 # 参照
 ## 全般
 - [Android programing getstart](https://kuririnz.github.io/AndroidCourse/android/12-KotlinBasic/#%E5%AD%A6%E7%BF%92%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88)
@@ -1449,3 +1480,8 @@ val box: Box<String> = Box<String>("test")
 ## Generics
 - [今更聞けないKotlin Generics入門](https://zenn.dev/96mame/articles/21e2f8c95947e9581192)
 - [[Kotlin]はじめてのジェネリクス クラスや関数で使ってみよう！](https://pouhon.net/kotlin-generics/3627/)
+## その他
+### 文字列操作
+- [Kotlinの文字列連結はStringBuilderが使われるという話](https://qiita.com/SYABU555/items/78b855328bea5f706f1a)
+- [指定した位置に文字列を挿入する](https://www.javadrive.jp/start/stringbuilder/index2.html)
+- [StringBuilderを使用した文字列操作](https://java-reference.com/java_string_stringbuilder.html)
