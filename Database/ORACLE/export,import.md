@@ -59,6 +59,9 @@ command> expdp sample01/password tables=(sample01.sampletbl) directory=sample_dp
 ```
 command> impdp sample01/password file=\\127.0.0.1\C$\oracle\oradata\expdat.dmp
 ```
+|機能説明|パラメータ|
+|:---:|:---:|
+|REMAP_SCHEMA|エクスポート時のスキーマとは別のスキーマにインポートするときに指定する。"REMAP_SCHEMA=<変換元スキーマ>:<変換後スキーマ>"という書式でスキーマ変換の対応関係を指定する。|
 
 # 参照
 - [Oracle Direct Seminar 意外と知らない!? Export/Importの基礎](https://www.oracle.com/jp/a/tech/docs/technical-resources/20100908-expimp-beginner.pdf)
