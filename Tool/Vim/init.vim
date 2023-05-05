@@ -72,6 +72,13 @@ set expandtab
 " クリップボードを有効
 set clipboard=unnamed
 
+" HTML/XML閉じタグ自動補完
+augroup MyXML
+  autocmd!
+  autocmd Filetype xml inoremap <buffer> </ </<C-x><C-o>
+  autocmd Filetype html inoremap <buffer> </ </<C-x><C-o>
+augroup END
+
 
 "----------------------------------------------------------------------------"
 "         検索
@@ -101,3 +108,29 @@ nnoremap :term <cmd>belowright new<CR><cmd>terminal git-bash.exe<CR>
 tnoremap <C-[> <C-\><C-n>
 " 常にInsertModeで開く
 autocmd TermOpen * startinsert
+
+"----------------------------------------------------------------------------"
+"         Pulgin
+"----------------------------------------------------------------------------"
+call plug#begin('C:\Users\a_my_\AppData\Local\nvim\plugged')
+"  Plug 'xiyaowong/transparent.nvim'
+call plug#end()
+
+
+"lua << EOF
+"require("transparent").setup({
+"  groups = { -- table: default groups
+"    'Normal', 'NormalNC', 'Comment', 'Constant', 'Special', 'Identifier',
+"    'Statement', 'PreProc', 'Type', 'Underlined', 'Todo', 'String', 'Function',
+"    'Conditional', 'Repeat', 'Operator', 'Structure', 'LineNr', 'NonText',
+"    'SignColumn', 'CursorLineNr', 'EndOfBuffer',
+"  },
+"  extra_groups = {
+"          "NormalFloat", -- plugins which have float panel such as lazy,Mason,LspInfo
+"          "NvimTreeNormal" -- NvimTree
+"          }, -- table: additional groups that should be cleared
+"  exclude_groups = {}, -- table: groups you don't want to clear
+"})
+"EOF
+
+
