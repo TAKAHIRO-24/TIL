@@ -51,6 +51,12 @@ set laststatus=2
 set wildmode=list:longest
 " シンタックスハイライトの有効化
 syntax enable
+" 背景色
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+highlight LineNr ctermbg=none
+highlight Folded ctermbg=none
+highlight EndOfBuffer ctermbg=none
 
 "----------------------------------------------------------------------------"
 "         入力
@@ -82,3 +88,16 @@ set wrapscan
 set hlsearch
 " ESC連打でハイライト解除
 nmap <ESC><ESC> :nohlsearch<CR><ESC>
+
+"----------------------------------------------------------------------------"
+"         ターミナルモード
+"----------------------------------------------------------------------------"
+" 新規タブでターミナルモードを起動
+nnoremap :Term <cmd>terminal<CR>
+" 下分割でターミナルモードを起動（git-bashを起動する※環境変数にパス通す必要あり）
+nnoremap :term <cmd>belowright new<CR><cmd>terminal git-bash.exe<CR>
+" TerminalのInsertModeからの離脱を「[ctrl+\]+[ctrl+n]」から[ESC]に変更
+"tnoremap <ESC> <C-\><C-n>
+tnoremap <C-[> <C-\><C-n>
+" 常にInsertModeで開く
+autocmd TermOpen * startinsert

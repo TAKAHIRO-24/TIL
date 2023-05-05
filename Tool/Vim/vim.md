@@ -34,4 +34,7 @@ e C:\users\user\AppData\Local\nvim\init.vim
 ```
 `:bd! N`コマンドで未保存でも強制敵に削除する。
 
+# ターミナル
+`:terminal`や`:term`でvimからターミナルを開くことができる。  
 
+- [Neovimのターミナルモードを快適に使いたい](https://qiita.com/Lennon_x00x_/items/e8fa47d27aaab9635161)
