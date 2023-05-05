@@ -1,5 +1,6 @@
 # neovimのインストール
 - [WindowsにNeoVimをインストールして設定ファイルinit.vimを読み込ませるまで](https://qiita.com/karakuri-t910/items/81f005ab6992ff54d5a5)
+- [インストールしたてのWindowsにNeovimとVim-plugをGUIベースでインストールする](https://qiita.com/Suzukaze31/items/e8d23efcaa3b21a4aa90)
 
 # ファイル名を指定して実行
 環境変数に`nvim-qt`のパスを登録すれば実行可能。
@@ -38,3 +39,7 @@ e C:\users\user\AppData\Local\nvim\init.vim
 `:terminal`や`:term`でvimからターミナルを開くことができる。  
 
 - [Neovimのターミナルモードを快適に使いたい](https://qiita.com/Lennon_x00x_/items/e8fa47d27aaab9635161)
+
+# init.luaの設定
+- [Getting started using Lua in Neovim](https://github.com/willelz/nvim-lua-guide-ja/blob/master/README.ja.md)
+- [neovimのinit.lua設定 おすすめ2023](https://qiita.com/maa_bp/items/3ab9fba56284ca314dfa)
